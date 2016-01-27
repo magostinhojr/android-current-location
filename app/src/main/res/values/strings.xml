@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">currentlocation</string>
+
+
+    <string name="toast_location_locationservices_disabled_message">Location services are disabled.\nYou must enable it to use this feature</string>
+    <string name="toast_location_locationservices_just_enabled_message">"Updating locations. This may take a while"</string>
+
+</resources>
