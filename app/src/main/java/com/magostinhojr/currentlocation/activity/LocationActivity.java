@@ -38,7 +38,7 @@ public class LocationActivity extends Activity {
     private TextView currLoc_lat;
     private TextView currLoc_lng;
 
-    private static final int FIVE_MINS_INTERVAL = 1000*60*5;
+    private static final int FIVE_MINS_INTERVAL = 1000*60*1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,8 +175,8 @@ public class LocationActivity extends Activity {
         try {
             url = new URL("http://192.168.0.13/save");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(15000);
-            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(60000);
+            conn.setConnectTimeout(60000);
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
