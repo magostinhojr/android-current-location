@@ -1,17 +1,17 @@
-package com.magostinhojr.currentlocation.activity;
+package com.magostinhojr.currentlocation.service;
 
-import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.magostinhojr.currentlocation.R;
 import com.magostinhojr.currentlocation.location.AbstractLocationListener;
 
 import java.io.BufferedReader;
@@ -29,31 +29,29 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by marceloagostinho on 1/21/16.
+ * Created by marceloagostinho on 1/28/16.
  */
-public class LocationActivity extends Activity {
+public class CurrentLocationService extends Service {
 
     private LocationManager locationManager;
 
-    private TextView currLoc_lat;
-    private TextView currLoc_lng;
-
-    private static final int FIVE_MINS_INTERVAL = 1000*60*1;
+    private static final int FIVE_MINS_INTERVAL = 1000*60*5;
+    private static final int ONE_MIN_INTERVAL = 1000*60*1;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Log.i("currentLocation", "onCreate");
-
-        setContentView(R.layout.activity_location);
-
-        currLoc_lat = (TextView) findViewById(R.id.currLoc_lat);
-        currLoc_lng = (TextView) findViewById(R.id.currLoc_lng);
-
-        startGetCurrentLocationWithInterval(FIVE_MINS_INTERVAL);
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        Log.e("currLocation", "onStartCommand");
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
+    @Override
+    public void onCreate() {
+        Log.e("currLocation", "onCreate");
+        super.onCreate();
+        startGetCurrentLocationWithInterval(ONE_MIN_INTERVAL);
+    }
 
     /**
      *
@@ -108,7 +106,6 @@ public class LocationActivity extends Activity {
      * Os métodos onProviderEnable e Disable ficam ouvindo qualquer alteração no sistema de Localização utilizado
      * No caso se estamos usando o GPS ou NETWORK para descobrirmos nossa localização
      *
-     * O método
      *
      */
     private final LocationListener locationListener = new AbstractLocationListener() {
@@ -128,8 +125,8 @@ public class LocationActivity extends Activity {
             super.onLocationChanged(location);
             locationManager.removeUpdates(this);
 
-            currLoc_lat.setText(String.valueOf(location.getLatitude()));
-            currLoc_lng.setText(String.valueOf(location.getLongitude()));
+            Log.d("LAT", String.valueOf(location.getLatitude()));
+            Log.d("LNG", String.valueOf(location.getLongitude()));
 
             new BackgroundOperation().execute(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
         }
@@ -148,9 +145,9 @@ public class LocationActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params){
-        //Your network connection code should be here .
-        String response = postCall(params[0], params[1]);
-        return response ;
+            //Your network connection code should be here .
+            String response = postCall(params[0], params[1]);
+            return response ;
         }
 
         @Override
@@ -215,4 +212,10 @@ public class LocationActivity extends Activity {
     }
 
 
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 }

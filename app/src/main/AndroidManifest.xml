@@ -12,15 +12,21 @@
         android:icon="@mipmap/ic_launcher" android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.LocationActivity">
+
+        <activity android:name=".activity.StartActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="ANDROID.INTENT.ACTION.MAIN" />
                 <category android:name="ANDROID.INTENT.CATEGORY.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
+        <service android:name=".service.CurrentLocationService" />
+
+
         <receiver
-            android:name=".receiver.LocationServiceBoot"
+            android:name=".receiver.LocationServiceStartOnBootReceiver"
             android:label="LocationServiceBoot">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

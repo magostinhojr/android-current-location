@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
- * Created by marceloagostinho on 1/21/16.
+ * Created by marceloagostinho.
  */
 public abstract class AbstractLocationListener implements LocationListener {
     @Override
