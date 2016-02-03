@@ -16,7 +16,7 @@ public class StartActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        Intent serviceIntent = new Intent(this, CurrentLocationService.class);
-//        startService(serviceIntent);
+        Intent serviceIntent = new Intent(this, CurrentLocationService.class);
+        startService(serviceIntent);
     }
 }
