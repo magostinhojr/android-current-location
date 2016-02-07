@@ -10,10 +10,15 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.magostinhojr.currentlocation.location.AbstractLocationListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -50,7 +55,7 @@ public class CurrentLocationService extends Service {
     public void onCreate() {
         Log.e("currLocation", "onCreate");
         super.onCreate();
-        startGetCurrentLocationWithInterval(ONE_MIN_INTERVAL);
+        startGetCurrentLocationWithInterval(FIVE_MINS_INTERVAL);
     }
 
     /**
@@ -164,33 +169,57 @@ public class CurrentLocationService extends Service {
 
     public String  postCall(String lat, String lng){
         URL url;
-        HashMap<String ,String> postDataParams = new HashMap<String ,String>();
-        postDataParams.put("lat", lat);
-        postDataParams.put("lng", lng);
+//        HashMap<String ,String> postDataParams = new HashMap<String ,String>();
+//        postDataParams.put("UserId", "123456789");
+//        postDataParams.put("Latidude", lat);
+//        postDataParams.put("Longitude", lng);
+
+        JSONObject jObject = new JSONObject();
+        try {
+            jObject.put("UserId", "123456789");
+            jObject.put("Latitude", lat);
+            jObject.put("Longitude", lng);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         String response = "";
         try {
-            url = new URL("http://192.168.0.13/save");
+            url = new URL("http://app.contazen.com.br/api/usuariomobileapi/PostInformarPosicao");
+//            url = new URL("http://192.168.0.12/save");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(60000);
-            conn.setConnectTimeout(60000);
+            conn.setReadTimeout(15000);
+            conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write(getPostDataString(postDataParams));
-            writer.flush();
-            writer.close();
+            conn.setFixedLengthStreamingMode(jObject.toString().getBytes().length);
+
+            //make some HTTP header nicety
+            conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+
+            //setup send
+            OutputStream os = new BufferedOutputStream(conn.getOutputStream());
+            os.write(jObject.toString().getBytes());
+
+            //clean up
+            os.flush();
             os.close();
+
             int responseCode=conn.getResponseCode();
             if(responseCode == HttpsURLConnection.HTTP_OK){
                 String line;
-                BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                while ((line=br.readLine()) != null) {response+=line;}}else {
-                response="";    }
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                while ((line=br.readLine()) != null) {
+                    response+=line;
+                }
+            } else {
+                response="";
+            }
         } catch (Exception e) {
-            e.printStackTrace();}
+            e.printStackTrace();
+        }
         return response;
     }
 
