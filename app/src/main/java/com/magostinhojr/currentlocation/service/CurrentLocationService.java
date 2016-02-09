@@ -185,7 +185,8 @@ public class CurrentLocationService extends Service {
 
         String response = "";
         try {
-            url = new URL("http://192.168.0.12/save");
+            url = new URL("http://app.contazen.com.br/api/usuariomobileapi/PostInformarPosicao");
+
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(15000);
             conn.setConnectTimeout(15000);
