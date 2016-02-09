@@ -42,10 +42,15 @@ public class CurrentLocationService extends Service {
 
     private static final int FIVE_MINS_INTERVAL = 1000*60*5;
     private static final int ONE_MIN_INTERVAL = 1000*60*1;
+    private static String UUID;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        TelephonyManager tManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+
+        UUID = tManager.getDeviceId();
+
         Log.e("currLocation", "onStartCommand");
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
@@ -55,7 +60,7 @@ public class CurrentLocationService extends Service {
     public void onCreate() {
         Log.e("currLocation", "onCreate");
         super.onCreate();
-        startGetCurrentLocationWithInterval(FIVE_MINS_INTERVAL);
+        startGetCurrentLocationWithInterval(ONE_MIN_INTERVAL);
     }
 
     /**
@@ -176,7 +181,7 @@ public class CurrentLocationService extends Service {
 
         JSONObject jObject = new JSONObject();
         try {
-            jObject.put("UserId", "123456789");
+            jObject.put("UserId", UUID);
             jObject.put("Latitude", lat);
             jObject.put("Longitude", lng);
         } catch (JSONException e) {
